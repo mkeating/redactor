@@ -1,4 +1,4 @@
-const { generateRedactedWordList } = require('../api/services');
+const { generateRedactedWordList, redactText } = require('../api/services');
 
 describe('generateRedactedWordList', () => {
   test('it should split on space', () => {
@@ -37,3 +37,36 @@ describe('generateRedactedWordList', () => {
     expect(generateRedactedWordList(input)).toEqual(output);
   });
 });
+
+// check for subwords, capitalization
+describe('redactText', () => {
+  test('it should replace a single word', () => {
+    const words = ['lorem'];
+    const text = 'lorem ipsum';
+    expect(redactText(words, text)).toEqual('XXXX ipsum');
+  });
+
+  test('it should replace all instances of a single word', () => {
+    const words = ['lorem'];
+    const text = 'lorem ipsum lorem';
+    expect(redactText(words, text)).toEqual('XXXX ipsum XXXX');
+  });
+
+  test('it should replace all instances of multiple words', () => {
+    const words = ['lorem', 'ipsum'];
+    const text = 'lorem ipsum lorem dolor foo bar ipsum';
+    expect(redactText(words, text)).toEqual('XXXX XXXX XXXX dolor foo bar XXXX');
+  });
+
+  test('it should handle punctuation', () => {
+    const words = ['lorem'];
+    const text = 'lorem! ipsum lorem';
+    expect(redactText(words, text)).toEqual('XXXX! ipsum XXXX');
+  });
+
+  test('it should handle subwords', () => {
+    const words = ['lorem'];
+    const text = 'lorem ipsum barloremfoo';
+    expect(redactText(words, text)).toEqual('XXXX ipsum barloremfoo');
+  });
+})
