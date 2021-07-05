@@ -11,6 +11,7 @@ module.exports = {
   },
 
   redactText: (words, text) => {
+    console.log(words, text);
     let result = text;
     for (const word of words) {
       const regex = new RegExp(`\\b${word}\\b`, 'g');

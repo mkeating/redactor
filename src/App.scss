@@ -1,3 +1,5 @@
+$brand-color: #66b3ff;
+
 * {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   box-sizing: border-box;
@@ -6,4 +8,24 @@
 button {
   border: none;
   outline: none;
+  width: 100%;
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 20px;
+  color: white;
+  background-color: $brand-color;
+  cursor: pointer;
+
+  &:hover {
+    background-color: darken($brand-color, 10%);
+  }
+}
+
+.App-header {
+  width: 400px;
+  margin: auto;
+}
+
+h1 {
+  color: $brand-color;
 }

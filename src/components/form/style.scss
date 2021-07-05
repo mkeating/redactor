@@ -1,31 +1,54 @@
-$button-color: #66b3ff;
+$brand-color: #66b3ff;
 
-.form {
+@keyframes rotate {
+  from {transform: rotate(0deg);}
+  to {transform: rotate(360deg);}
+}
+
+.form-container {
+  position: relative;
   width: 400px;
   margin: auto;
-  font-size: 16px;
 
-  input, textarea {
+  .form {
     width: 100%;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    margin: auto;
     font-size: 16px;
-    padding: 12px;
+  
+    input, textarea {
+      width: 100%;
+      margin: 8px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+      padding: 12px;
+    }
   }
 
-  .submit {
+  .pending {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    border-radius: 4px;
-    padding: 12px;
-    font-size: 20px;
-    color: white;
-    background-color: $button-color;
-    cursor: pointer;
+    height: 100%;
+    background: white;
+    opacity: .8;
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-    &:hover {
-      background-color: darken($button-color, 10%);
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #ccc;
+      border-top: 4px solid $brand-color;
+      border-radius: 50%;
+      animation-name: rotate;
+      animation-duration: 1.2s;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
     }
   }
 }

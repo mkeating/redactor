@@ -1,29 +1,27 @@
-/**
- * Input parameters:
-1. String of keywords and phrases: a string of censored keywords and phrases separated by spaces or
-commas. Phrases will be enclosed in single or double-quotes. Some examples:
-Hello world “Boston Red Sox”
-‘Pepperoni Pizza’, ‘Cheese Pizza’, beer
-2. Document text – the original document text that needs the provided keywords and phrases removed
-(masked out).
-Returns:
-Document text with indicated keywords and phrases removed and replaced with XXXX.
-
- */
-
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
 import fetch from 'node-fetch';
+import Pending from './subcomponents/pending.jsx';
+import Failure from './subcomponents/failure.jsx';
+import Redacted from './subcomponents/redacted.jsx';
+
 import './style.scss';
 
 const Form = () => {
+  // form data
   const [wordsData, setWordsData] = useState('');
   const [textData, setTextData] = useState('');
 
+  // UI states
+  const [displayForm, setDisplayForm] = useState(true);
+  const [displayPending, setDisplayPending] = useState(false);
+  const [displayRedacted, setDisplayRedacted] = useState(null);
+  const [displayError, setdisplayError] = useState(null);
+
   useEffect(() => {
     // debug
-    console.log(wordsData);
-    console.log(textData);
-  });
+    setDisplayForm(true);
+  }, []);
 
   const handleWords = (event) => {
     setWordsData(event.target.value);
@@ -33,8 +31,9 @@ const Form = () => {
     setTextData(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    setDisplayPending(true);
     const requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -44,34 +43,61 @@ const Form = () => {
       }),
     };
 
-    fetch('http://localhost:8080/api/process-text', requestOptions)
-      .then((res) => res.text())
-      .then((res) => console.log(res));
+    const response = await fetch('http://localhost:8080/api/process-text', requestOptions)
+      .catch((err) => {
+        setdisplayError(err.message);
+        setDisplayPending(false);
+        setDisplayForm(true);
+      });
+
+    /** TODO: handle error
+     *  clear fields on success, retain on error
+     * */
+    if (response && response.ok) {
+      const data = await response.json();
+      setDisplayRedacted(data.body.redacted);
+      setDisplayPending(false);
+      setDisplayForm(false);
+    }
   };
 
   return (
-    <div className='form'>
-      <h3>Redact documents</h3>
-      <form onSubmit={(e) => handleSubmit(e)}>
-        <label>
-          Words to redact(separate with commas or spaces):
-          <input
-            type='text'
-            name='words'
-            value={wordsData}
-            onChange={(e) => handleWords(e)}
+    <div className='form-container'>
+      {/** Form state */}
+      {displayForm && (
+      <div className='form'>
+        <h3>Redact documents</h3>
+        <form onSubmit={(e) => handleSubmit(e)}>
+          <label>
+            Words to redact(separate with commas or spaces):
+            <input
+              type='text'
+              name='words'
+              value={wordsData}
+              onChange={(e) => handleWords(e)}
+              />
+          </label>
+          <label>
+            Text to process:
+            <textarea
+              name='text'
+              value={textData}
+              onChange={(e) => handleText(e)}
             />
-        </label>
-        <label>
-          Text to process:
-          <textarea
-            name='text'
-            value={textData}
-            onChange={(e) => handleText(e)}
-          />
-        </label>
-        <button className='submit' type='submit'>Submit</button>
-      </form>
+          </label>
+          <button className='submit' type='submit'>Submit</button>
+        </form>
+      </div>
+      )}
+
+      {/** Pending State */}
+      {displayPending && <Pending />}
+
+      {/** Success State */}
+      {displayRedacted && <Redacted text={displayRedacted} />}
+
+      {/** Fail state */}
+      {displayError && <Failure errorMessage={displayError} />}
     </div>
   );
 };
