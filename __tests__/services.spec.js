@@ -64,7 +64,7 @@ describe('redactText', () => {
     expect(redactText(words, text)).toEqual('XXXX! ipsum XXXX');
   });
 
-  test('it should handle subwords', () => {
+  test('it should ignore subwords', () => {
     const words = ['lorem'];
     const text = 'lorem ipsum barloremfoo';
     expect(redactText(words, text)).toEqual('XXXX ipsum barloremfoo');

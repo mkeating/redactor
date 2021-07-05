@@ -29,6 +29,7 @@ const Form = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setDisplayPending(true);
+
     const requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
