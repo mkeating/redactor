@@ -16,12 +16,7 @@ const Form = () => {
   const [displayForm, setDisplayForm] = useState(true);
   const [displayPending, setDisplayPending] = useState(false);
   const [displayRedacted, setDisplayRedacted] = useState(null);
-  const [displayError, setdisplayError] = useState(null);
-
-  useEffect(() => {
-    // debug
-    setDisplayForm(true);
-  }, []);
+  const [displayError, setdisplayError] = useState(false);
 
   const handleWords = (event) => {
     setWordsData(event.target.value);
@@ -45,14 +40,11 @@ const Form = () => {
 
     const response = await fetch('http://localhost:8080/api/process-text', requestOptions)
       .catch((err) => {
-        setdisplayError(err.message);
+        setdisplayError(true);
         setDisplayPending(false);
         setDisplayForm(true);
       });
 
-    /** TODO: handle error
-     *  clear fields on success, retain on error
-     * */
     if (response && response.ok) {
       const data = await response.json();
       setDisplayRedacted(data.body.redacted);
@@ -63,6 +55,7 @@ const Form = () => {
 
   return (
     <div className='form-container'>
+
       {/** Form state */}
       {displayForm && (
       <div className='form'>
@@ -85,7 +78,13 @@ const Form = () => {
               onChange={(e) => handleText(e)}
             />
           </label>
-          <button className='submit' type='submit'>Submit</button>
+          <button
+            disabled={(wordsData.length === 0 || textData.length === 0) && 'disabled'}
+            className='submit'
+            type='submit'
+          >
+            Submit
+          </button>
         </form>
       </div>
       )}
@@ -97,7 +96,7 @@ const Form = () => {
       {displayRedacted && <Redacted text={displayRedacted} />}
 
       {/** Fail state */}
-      {displayError && <Failure errorMessage={displayError} />}
+      {displayError && <Failure />}
     </div>
   );
 };

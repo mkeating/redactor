@@ -19,6 +19,12 @@ button {
   &:hover {
     background-color: darken($brand-color, 10%);
   }
+
+  &:disabled {
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+}
 }
 
 .App-header {
